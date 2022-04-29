@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 const app = express();
@@ -20,12 +20,34 @@ async function run() {
         await client.connect();
         const phoneCollection = client.db("warehouse").collection("phone");
 
-        app.get('/phones', async (req, res) => {
+        app.get('/phone', async (req, res) => {
             const query = {};
             const cursor = phoneCollection.find(query);
             const phones = await cursor.toArray();
             res.send(phones);
         })
+
+        app.get('/phone/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const phone = await phoneCollection.findOne(query);
+            res.send(phone);
+        })
+
+        app.put('/phone/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateUser = req.body;
+            const query = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: updateUser.quantity
+                },
+            };
+            const result = await phoneCollection.updateOne(query, updateDoc, options);
+            res.send(result);
+        })
+
     }
     finally {
 
