@@ -36,15 +36,22 @@ async function run() {
 
         app.put('/phone/:id', async (req, res) => {
             const id = req.params.id;
-            const updateUser = req.body;
+            const updatePhone = req.body;
             const query = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateDoc = {
                 $set: {
-                    quantity: updateUser.quantity
+                    quantity: updatePhone.quantity
                 },
             };
             const result = await phoneCollection.updateOne(query, updateDoc, options);
+            res.send(result);
+        })
+
+        app.delete('/phone/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await phoneCollection.deleteOne(query);
             res.send(result);
         })
 
