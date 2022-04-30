@@ -55,6 +55,11 @@ async function run() {
             res.send(result);
         })
 
+        app.post('/phone', async (req, res) => {
+            const newPhone = req.body;
+            const result = await phoneCollection.insertOne(newPhone);
+            res.send(result);
+        })
     }
     finally {
 
