@@ -20,6 +20,7 @@ async function run() {
         await client.connect();
         const phoneCollection = client.db("warehouse").collection("phone");
 
+        // get
         app.get('/phone', async (req, res) => {
             const query = {};
             const cursor = phoneCollection.find(query);
@@ -34,20 +35,30 @@ async function run() {
             res.send(phone);
         })
 
+        app.get('/myitems', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const cursor = phoneCollection.find(query);
+            const items = await cursor.toArray();
+            res.send(items);
+        })
+
+        // update 
         app.put('/phone/:id', async (req, res) => {
             const id = req.params.id;
             const updatePhone = req.body;
             const query = { _id: ObjectId(id) };
-            const options = { upsert: true };
             const updateDoc = {
                 $set: {
                     quantity: updatePhone.quantity
                 },
             };
+            const options = { upsert: true };
             const result = await phoneCollection.updateOne(query, updateDoc, options);
             res.send(result);
         })
 
+        // delete
         app.delete('/phone/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -55,6 +66,7 @@ async function run() {
             res.send(result);
         })
 
+        // post
         app.post('/phone', async (req, res) => {
             const newPhone = req.body;
             const result = await phoneCollection.insertOne(newPhone);
